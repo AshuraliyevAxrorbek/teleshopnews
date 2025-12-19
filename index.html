@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <title>📱 TeleshopNews - Telefon Yangiliklari</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0051D5;
+            --secondary: #5856D6;
+            --success: #34C759;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --bg-light: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --text-primary: #000000;
+            --text-secondary: #8E8E93;
+            --border: #C6C6C8;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.18);
+        }
+
+        [data-theme="dark"] {
+            --bg-light: #000000;
+            --bg-card: #1C1C1E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --border: #38383A;
+            --shadow: rgba(0, 0, 0, 0.4);
+            --glass-bg: rgba(28, 28, 30, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Animated Background Gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(88, 86, 214, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.1) 0%, transparent 50%);
+            animation: gradientMove 20s ease infinite;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        [data-theme="dark"] body::before {
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 122, 255, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(88, 86, 214, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.15) 0%, transparent 50%);
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(5%, -5%) rotate(120deg); }
+            66% { transform: translate(-5%, 5%) rotate(240deg); }
+        }
+
+        /* Header - Liquid Glass Effect */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            box-shadow: 0 8px 32px var(--shadow);
+            animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .logo i {
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rotate3d 10s linear infinite;
+        }
+
+        @keyframes rotate3d {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.3;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .icon-btn:active::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        /* Search Bar - Glass Effect */
+        .search-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 50px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .search-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--text-secondary);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: var(--danger);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Filters - Horizontal Scroll with Glass */
+        .filters {
+            max-width: 1200px;
+            margin: 0 auto 25px;
+            padding: 0 20px;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
+        }
+
+        .filters-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 8px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .filters-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            flex-shrink: 0;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1.5px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .filter-chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .filter-chip:hover::before {
+            left: 100%;
+        }
+
+        .filter-chip.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+        }
+
+        .filter-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            animation: fadeInUp 0.6s ease 0.4s backwards;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* News Grid - Masonry Layout */
+        .news-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            animation: fadeInUp 0.6s ease 0.5s backwards;
+        }
+
+        @media (max-width: 768px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* News Card - Premium iOS 18 Design */
+        .news-card {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px var(--shadow);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: cardAppear 0.6s ease backwards;
+            animation-delay: calc(var(--index) * 0.05s);
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(0, 122, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .news-card:hover::before {
+            opacity: 1;
+        }
+
+        .news-image-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .news-card:hover .news-image {
+            transform: scale(1.15) rotate(2deg);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .news-card:hover .image-overlay {
+            opacity: 1;
+        }
+
+        /* New Badge - Animated */
+        .new-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF3B30 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(255, 59, 48, 0.5);
+            animation: pulse 2s ease-in-out infinite, float 3s ease-in-out infinite;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .new-badge::before {
+            content: '✨';
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* Category Badge */
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--glass-border);
+            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* News Content */
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-title {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.3s;
+        }
+
+        .news-card:hover .news-title {
+            color: var(--primary);
+        }
+
+        .news-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* News Footer */
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .news-time {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .news-time i {
+            font-size: 14px;
+        }
+
+        .read-more-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .read-more-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(0, 122, 255, 0.5);
+        }
+
+        .read-more-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Loading - Liquid Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 0.5s ease 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .liquid-loader {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .liquid-loader::before,
+        .liquid-loader::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            animation: liquidWave 2s ease-in-out infinite;
+        }
+
+        .liquid-loader::after {
+            animation-delay: -1s;
+        }
+
+        @keyframes liquidWave {
+            0%, 100% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+        }
+
+        .loading-text {
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .empty-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Error State */
+        .error-state {
+            background: linear-gradient(135deg, rgba(255, 59, 48, 0.1), rgba(255, 107, 107, 0.1));
+            border: 2px solid var(--danger);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-icon {
+            font-size: 60px;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 10px;
+        }
+
+        .error-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: var(--danger);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 59, 48, 0.5);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fabEntry 0.6s ease 1s backwards;
+        }
+
+        @keyframes fabEntry {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .fab:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 12px 40px rgba(0, 122, 255, 0.6);
+        }
+
+        .fab:active {
+            transform: scale(0.95) rotate(90deg);
+        }
+
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 10px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo i {
+                font-size: 26px;
+            }
+
+            .icon-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
+            }
+
+            .search-input {
+                padding: 14px 45px 14px 45px;
+                font-size: 15px;
+            }
+
+            .filter-chip {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+
+            .news-image-container {
+                height: 200px;
+            }
+
+            .fab, .scroll-top {
+                bottom: 20px;
+            }
+
+            .fab {
+                right: 20px;
+                width: 55px;
+                height: 55px;
+            }
+
+            .scroll-top {
+                left: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="liquid-loader"></div>
+        <div class="loading-text">TeleshopNews yuklanmoqda...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-mobile-alt"></i>
+                <span>TeleshopNews</span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle" title="Rejim o'zgartirish">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn" id="refreshBtn" title="Yangilash">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Qidirish...">
+            <button class="clear-btn" id="clearBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <div class="filters-scroll">
+            <button class="filter-chip active" data-filter="all">
+                <i class="fas fa-globe"></i> Barchasi
+            </button>
+            <button class="filter-chip" data-filter="new">
+                <i class="fas fa-fire"></i> Yangi
+            </button>
+            <button class="filter-chip" data-filter="Samsung">
+                <i class="fab fa-android"></i> Samsung
+            </button>
+            <button class="filter-chip" data-filter="Apple">
+                <i class="fab fa-apple"></i> Apple
+            </button>
+            <button class="filter-chip" data-filter="Xiaomi">
+                <i class="fas fa-mobile-alt"></i> Xiaomi
+            </button>
+            <button class="filter-chip" data-filter="Google">
+                <i class="fab fa-google"></i> Google
+            </button>
+            <button class="filter-chip" data-filter="OnePlus">
+                <i class="fas fa-plus-circle"></i> OnePlus
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-value" id="totalNews">0</div>
+            <div class="stat-label">Jami yangiliklar</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="newNews">0</div>
+            <div class="stat-label">Yangi</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="todayNews">0</div>
+            <div class="stat-label">Bugun</div>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" id="errorState" style="display: none;">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="error-title">Xatolik yuz berdi</h3>
+        <p class="error-desc">Yangiliklar yuklanmadi. Iltimos, internetni tekshiring va qaytadan urinib ko'ring.</p>
+        <button class="retry-btn" onclick="loadNews()">
+            <i class="fas fa-redo"></i> Qayta urinish
+        </button>
+    </div>
+
+    <!-- News Grid -->
+    <div class="news-grid" id="newsGrid"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">🔍</div>
+        <h3 class="empty-title">Yangiliklar topilmadi</h3>
+        <p class="empty-desc">Boshqa so'z bilan qidiring yoki filtrlarni o'zgartiring</p>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" id="fabBtn" title="Yangilash">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Constants
+        const API_URL = 'https://YOUR-BACKEND.herokuapp.com/api/news';
+        
+        // Telegram WebApp
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        tg.enableClosingConfirmation();
+
+        // State
+        let allNews = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // Elements
+        const newsGrid = document.getElementById('newsGrid');
+        const loading = document.getElementById('loading');
+        const errorState = document.getElementById('errorState');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const fabBtn = document.getElementById('fabBtn');
+        const scrollTop = document.getElementById('scrollTop');
+
+        // Theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Haptic feedback
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Load News
+        async function loadNews() {
+            try {
+                showLoading();
+                
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                if (data.success && data.data) {
+                    allNews = data.data;
+                    updateStats();
+                    filterNews();
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Error loading news:', error);
+                showError();
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display News
+        function displayNews(news) {
+            if (news.length === 0) {
+                newsGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+                errorState.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            errorState.style.display = 'none';
+            newsGrid.style.display = 'grid';
+
+            newsGrid.innerHTML = news.map((item, index) => `
+                <div class="news-card" style="--index: ${index}" onclick="openNews('${item.link}')">
+                    ${item.is_new ? '<div class="new-badge">YANGI</div>' : ''}
+                    ${item.category ? `<div class="category-badge">${item.category}</div>` : ''}
+                    
+                    <div class="news-image-container">
+                        <img src="${item.image || 'https://via.placeholder.com/600x400/667eea/ffffff?text=📱'}" 
+                             alt="${item.title_uz}" 
+                             class="news-image"
+                             onerror="this.src='https://via.placeholder.com/600x400/667eea/ffffff?text=📱+TeleshopNews'">
+                        <div class="image-overlay"></div>
+                    </div>
+
+                    <div class="news-content">
+                        <h3 class="news-title">${item.title_uz}</h3>
+                        ${item.desc_uz ? `<p class="news-desc">${item.desc_uz}</p>` : ''}
+                        
+                        <div class="news-footer">
+                            <span class="news-time">
+                                <i class="far fa-clock"></i>
+                                ${item.time}
+                            </span>
+                            <button class="read-more-btn" onclick="event.stopPropagation(); openNews('${item.link}')">
+                                Batafsil
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter News
+        function filterNews() {
+            let filtered = allNews;
+
+            // Category filter
+            if (currentFilter === 'new') {
+                filtered = filtered.filter(n => n.is_new);
+            } else if (currentFilter !== 'all') {
+                filtered = filtered.filter(n => n.category === currentFilter);
+            }
+
+            // Search filter
+            if (searchQuery) {
+                filtered = filtered.filter(n => 
+                    n.title_uz.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (n.desc_uz && n.desc_uz.toLowerCase().includes(searchQuery.toLowerCase()))
+                );
+            }
+
+            displayNews(filtered);
+        }
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('totalNews').textContent = allNews.length;
+            document.getElementById('newNews').textContent = allNews.filter(n => n.is_new).length;
+            document.getElementById('todayNews').textContent = allNews.filter(n => n.hours_ago < 24).length;
+        }
+
+        // Open News
+        function openNews(url) {
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+            tg.openLink(url);
+        }
+
+        // UI States
+        function showLoading() {
+            loading.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 500);
+        }
+
+        function showError() {
+            errorState.style.display = 'block';
+            newsGrid.style.display = 'none';
+            emptyState.style.display = 'none';
+        }
+
+        // Event Listeners
+        themeToggle.addEventListener('click', toggleTheme);
+
+        refreshBtn.addEventListener('click', () => {
+            refreshBtn.querySelector('i').style.animation = 'spin 1s linear';
+            setTimeout(() => {
+                refreshBtn.querySelector('i').style.animation = '';
+            }, 1000);
+            loadNews();
+        });
+
+        fabBtn.addEventListener('click', () => {
+            fabBtn.querySelector('i').style.animation = 'spin 1s linear';
+            setTimeout(() => {
+                fabBtn.querySelector('i').style.animation = '';
+            }, 1000);
+            loadNews();
+        });
+
+        // Search
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            clearBtn.style.display = searchQuery ? 'flex' : 'none';
+            filterNews();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            clearBtn.style.display = 'none';
+            filterNews();
+        });
+
+        // Filter Chips
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentFilter = chip.dataset.filter;
+                filterNews();
+                
+                if (tg.HapticFeedback) {
+                    tg.HapticFeedback.selectionChanged();
+                }
+            });
+        });
+
+        // Scroll to Top
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                scrollTop.classList.add('visible');
+            } else {
+                scrollTop.classList.remove('visible');
+            }
+        });
+
+        scrollTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initialize
+        initTheme();
+        loadNews();
+
+        // Auto refresh every 5 minutes
+        setInterval(loadNews, 5 * 60 * 1000);
+
+        // Add rotation animation for refresh icons
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
