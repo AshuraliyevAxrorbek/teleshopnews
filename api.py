@@ -2,12 +2,20 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
 import os
+import time
 from datetime import datetime
+
+# 👉 parser funksiyasini chaqiramiz
+from parser import run_parser
 
 app = Flask(__name__)
 CORS(app)
 
 DATA_FILE = "news_data.json"
+
+# ⏱ Parser interval (30 daqiqa)
+PARSER_INTERVAL = 60 * 30
+LAST_RUN = 0
 
 
 # ================= ROOT =================
@@ -17,6 +25,7 @@ def index():
     return jsonify({
         "name": "TeleshopNews API",
         "status": "active",
+        "mode": "free-parser-trigger",
         "time": datetime.now().isoformat(),
         "endpoints": {
             "/api/news": "Yangiliklar (page, limit, category)",
@@ -29,6 +38,18 @@ def index():
 
 @app.route("/api/news")
 def get_news():
+    global LAST_RUN
+
+    # 🔥 HAR 30 DAQIQADA PARSER ISHLAYDI
+    now = time.time()
+    if now - LAST_RUN > PARSER_INTERVAL:
+        try:
+            print("🟢 API orqali parser ishga tushdi")
+            run_parser()
+            LAST_RUN = now
+        except Exception as e:
+            print("❌ Parser xato:", e)
+
     if not os.path.exists(DATA_FILE):
         return jsonify({
             "success": False,
@@ -88,7 +109,8 @@ def health():
         "last_update": (
             datetime.fromtimestamp(os.path.getmtime(DATA_FILE)).isoformat()
             if os.path.exists(DATA_FILE) else None
-        )
+        ),
+        "parser_interval_minutes": PARSER_INTERVAL // 60
     })
 
 
