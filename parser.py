@@ -9,18 +9,20 @@ import os
 
 BASE_URL = "https://gagadget.com"
 LIST_URL = "https://gagadget.com/news/phones/"
+DATA_FILE = "news_data.json"
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
     "Accept-Language": "ru-RU,ru;q=0.9"
 }
 
 translator = GoogleTranslator(source="ru", target="uz")
 
 
+# ================= CATEGORY =================
+
 def detect_category(title: str):
     t = title.lower()
-
     if "samsung" in t or "galaxy" in t:
         return "Samsung"
     if "apple" in t or "iphone" in t:
@@ -31,7 +33,6 @@ def detect_category(title: str):
         return "Google"
     if "oneplus" in t:
         return "OnePlus"
-
     return "Boshqa"
 
 
@@ -66,6 +67,15 @@ def parse_hours(text):
     return 0
 
 
+# ================= LOAD OLD =================
+
+def load_old_news():
+    if not os.path.exists(DATA_FILE):
+        return []
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 # ================= ARTICLE =================
 
 def fetch_article(url):
@@ -95,18 +105,19 @@ def fetch_article(url):
 
 # ================= MAIN PARSER =================
 
-def parse_gagadget():
-    print("🌐 Gagadget phones parsing...")
+def run_parser():
+    print("🟢 Parser ishga tushdi", datetime.now())
+
+    old_news = load_old_news()
+    existing_links = {n["link"] for n in old_news}
 
     r = requests.get(LIST_URL, headers=HEADERS, timeout=15)
     soup = BeautifulSoup(r.text, "html.parser")
 
     cards = soup.select("div.l-grid_3")
-    print(f"📋 Topildi: {len(cards)} ta")
+    new_items = []
 
-    news = []
-
-    for i, card in enumerate(cards[:15], 1):
+    for card in cards[:20]:
         try:
             title_a = card.select_one("span.cell-title a")
             if not title_a:
@@ -115,64 +126,46 @@ def parse_gagadget():
             title_ru = clean(title_a.text)
             link = BASE_URL + title_a["href"]
 
+            if link in existing_links:
+                continue  # 🔥 ENG MUHIM JOY
+
             img = card.select_one("a.cell-img img")
-            image = ""
-            if img and img.get("src"):
-                image = BASE_URL + img["src"]
+            image = BASE_URL + img["src"] if img and img.get("src") else ""
 
             date = card.select_one("span.cell-date")
             time_text = clean(date.text) if date else "0 часов назад"
             hours = parse_hours(time_text)
 
-            print(f"🔹 {i}. {title_ru}")
-
             full_ru, article_images = fetch_article(link)
 
-            news.append({
+            new_items.append({
                 "id": abs(hash(link)),
-
                 "title_uz": translate(title_ru),
                 "desc_uz": translate(title_ru),
                 "full_text_uz": translate(full_ru),
-
                 "title_en": title_ru,
                 "desc_en": title_ru,
                 "full_text_en": full_ru,
-
                 "image": image,
                 "article_images": article_images,
-
-                "category": detect_category(title_ru),  # 🔥 MUHIM JOY
+                "category": detect_category(title_ru),
                 "link": link,
                 "time": time_text,
                 "hours_ago": hours,
                 "is_new": hours <= 24,
-
                 "timestamp": datetime.now().isoformat()
             })
-
-
 
             time.sleep(1)
 
         except Exception as e:
-            print("Xato:", e)
+            print("❌ Xato:", e)
 
-    return news
+    if new_items:
+        all_news = new_items + old_news
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(all_news[:200], f, ensure_ascii=False, indent=2)
 
-
-# ================= SAVE =================
-
-def save_news(news):
-    with open("news_data.json", "w", encoding="utf-8") as f:
-        json.dump(news, f, ensure_ascii=False, indent=2)
-    print(f"\n💾 Saqlandi: {len(news)} ta yangilik")
-
-
-def main():
-    news = parse_gagadget()
-    save_news(news)
-
-
-if __name__ == "__main__":
-    main()
+        print(f"✅ Yangi qo‘shildi: {len(new_items)} ta")
+    else:
+        print("ℹ️ Yangi yangilik topilmadi")
