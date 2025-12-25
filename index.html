@@ -740,6 +740,7 @@
         tg.ready();
 
         let allNews = [];
+        let totalCount = 0;
         let currentFilter = 'all';
         let searchQuery = '';
         let currentNews = null;
@@ -782,9 +783,11 @@
                 const data = await response.json();
 
                 if (data.success && data.data) {
-                    allNews = data.data;
+                    allNews = data.data;     // 🔹 faqat 15 ta feed
+                    totalCount = data.count; // 🔥 jami barcha yangiliklar soni
                     updateStats();
                     filterNews();
+                }
                 } else {
                     showError();
                 }
@@ -938,10 +941,13 @@
 
         // Update Stats
         function updateStats() {
-            document.getElementById('totalNews').textContent = allNews.length;
-            document.getElementById('newNews').textContent = allNews.filter(n => n.is_new).length;
-            document.getElementById('todayNews').textContent = allNews.filter(n => n.hours_ago < 24).length;
+            document.getElementById('totalNews').textContent = totalCount;
+            document.getElementById('newNews').textContent =
+                allNews.filter(n => n.is_new).length;
+            document.getElementById('todayNews').textContent =
+                allNews.filter(n => n.hours_ago < 24).length;
         }
+
 
         // Show Error
         function showError() {
@@ -984,3 +990,4 @@
     </script>
 </body>
 </html>
+
