@@ -40,11 +40,10 @@ def index():
 def get_news():
     global LAST_RUN
 
-    # 🔥 HAR 30 DAQIQADA PARSER ISHLAYDI
+    # 🔥 HAR 30 DAQIQADA PARSER
     now = time.time()
     if now - LAST_RUN > PARSER_INTERVAL:
         try:
-            print("🟢 API orqali parser ishga tushdi")
             run_parser()
             LAST_RUN = now
         except Exception as e:
@@ -66,35 +65,38 @@ def get_news():
             "error": str(e)
         }), 500
 
-    # Query params
-    try:
-        page = int(request.args.get("page", 1))
-        limit = int(request.args.get("limit", 15))
-    except ValueError:
-        page = 1
-        limit = 15
-
+    # ================= PARAMS =================
+    page = request.args.get("page", type=int, default=1)
+    limit = request.args.get("limit", type=int)
     category = request.args.get("category")
 
     if page < 1:
         page = 1
-    if limit < 1 or limit > 50:
-        limit = 15
 
-    # Filter by category
+    # ================= FILTER =================
     if category:
         data = [item for item in data if item.get("category") == category]
 
     total = len(data)
-    start = (page - 1) * limit
-    end = start + limit
+
+    # ================= PAGINATION =================
+    if limit is not None:
+        if limit < 1 or limit > 200:
+            limit = 15
+
+        start = (page - 1) * limit
+        end = start + limit
+        sliced_data = data[start:end]
+    else:
+        # 🔥 LIMIT YO‘Q → HAMMASI
+        sliced_data = data
 
     return jsonify({
         "success": True,
         "count": total,
         "page": page,
         "limit": limit,
-        "data": data[start:end],
+        "data": sliced_data,
         "timestamp": datetime.now().isoformat()
     })
 
@@ -118,3 +120,4 @@ def health():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
